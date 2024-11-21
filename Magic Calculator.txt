@@ -1,28 +1,32 @@
-operator = input('What operation do you want? Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents and R for Roots. ')
-number1=float(input('First Number? '))
-number2=float(input('Second Number? '))
-if operator == 'A' or 'a':
-    print('Your answer is:' , str(number1 + number2))
-elif operator == 'S' or 's':
-    print('Your answer is:' , str(number1 - number2))
-elif operator == 'M' or 'm':
-    print('Your answer is:' , str(number1 * number2))
-elif operator == 'D' or 'd':
-    if number2 == 0:
-        print('Error: Dividing by 0 is illegal and can face you 60 years in school')
-    else:
-        print('Your answer is:' , str(number1 / number2))
-elif operator == 'E' or 'e':
-    if number1 == 0 and number2 == 0:
-        print('Error: 0^0 may land you 90 years in Math Jail')
-    else:
-        print('Your answer is:' , str(number1 ** number2))
-elif operator == 'R' or 'r':
-    if number2 == 1 or number2 == 0:
-        print('Error: Rooting in such a way can get 8 generations of your family in Math Jail')
-    elif number1 < 0 or number2 < 0:
-        print('Error: Such roots cannot exist and you might get 500 families in Math Jail')
-    else:
-        print('Your answer is:' , str(number1 ** (1/number2)))
-else: 
-    print('Invalid Operator')
+while True:
+ operator = input('What operation do you want? Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents and R for Roots. Press Q to quit. ')
+ operatorC = operator.upper()
+ if operatorC == 'Q':
+     break
+ number1=float(input('First Number? '))
+ number2=float(input('Second Number? '))
+ if operatorC == 'A':
+     print('Your answer is:' , str(number1 + number2))
+ elif operatorC == 'S':
+     print('Your answer is:' , str(number1 - number2))
+ elif operatorC == 'M':
+     print('Your answer is:' , str(number1 * number2))
+ elif operatorC == 'D':
+     if number2 == 0:
+         print('Error: Dividing by 0 is illegal and can face you 60 years in school')
+     else:
+         print('Your answer is:' , str(number1 / number2))
+ elif operatorC == 'E':
+     if number1 == 0 and number2 == 0:
+         print('Error: 0^0 may land you 90 years in Math Jail')
+     else:
+         print('Your answer is:' , str(number1 ** number2))
+ elif operatorC == 'R':
+     if number2 == 1 or number2 == 0:
+         print('Error: Rooting in such a way can get 8 generations of your family in Math Jail')
+     elif number1 < 0 or number2 < 0:
+         print('Error: Such roots cannot exist and you might get 500 families in Math Jail')
+     else:
+         print('Your answer is:' , str(number1 ** (1/number2)))
+ else: 
+     print('Invalid Operator')
