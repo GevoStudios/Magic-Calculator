@@ -1,273 +1,430 @@
 import math
-memory = 'empty!'
-memory2 = 'empty!'
-memory3 = 'empty!'
-memory4 = 'empty!'
+
+memory = "empty!"
+memory2 = "empty!"
+memory3 = "empty!"
+memory4 = "empty!"
 while True:
-     operator = input('What operation do you want? Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents, R for Roots, F for factorials, Mod for Modular stuff, Log for Log, Sin/Cos/tan do what you expect them to do (in radians). Press Q to quit and CMD for more commands. ')
-     operatorC = operator.upper()
-     if operatorC == 'Q':
+    operator = input(
+        "What operation do you want? Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents, R for Roots, F for factorials, Mod for Modular stuff, Log for Log, Sin/Cos/tan do what you expect them to do (in radians). Press Q to quit and CMD for more commands. "
+    )
+    operatorC = operator.upper()
+    if operatorC == "Q":
         break
-     if operatorC == 'MI':
-        print('Memory:', memory, memory2, memory3, memory4, '. To add memory, type ME. To use memory in calculations, for me1 its M1, and so on. ')
+    if operatorC == "MI":
+        print(
+            "Memory:",
+            memory,
+            memory2,
+            memory3,
+            memory4,
+            ". To add memory, type ME. To use memory in calculations, for me1 its M1, and so on. To reset memory, type MRA to reset all and MR(memory slot) to erase any memory slot, like MR1. ",
+        )
         continue
-     if operatorC == 'CMD':
-         print('MI gives memory info, ME1 gives memory edit to slot 1 ME2 to slot 2 and so on until slot 4. C for conversions ')
-         continue
-     if operatorC == 'ME1':
-         str(memory)
-         memory = float(input('What do you want to set memory slot 1 to? It is currently ' + memory + ' ' + '. '))
-         continue
-     if operatorC == 'ME2':
-         str(memory2)
-         memory2 = float(input('What do you want to set memory slot 2 to? It is currently ' + memory2 + ' ' + '. '))
-         continue
-     if operatorC == 'ME3':
-         memory3 = float(input('What do you want to set memory slot 3 to? It is currently ' + memory3 + ' ' + '. '))
-         continue
-     if operatorC == 'ME4':
-         memory4 = float(input('What do you want to set memory slot 4 to? It is currently ' + memory4 + ' ' + '. '))
-         continue
-     if operatorC == 'C':
-        converter = input('Type ktm for km to miles, and mtk for reverse. cti for cm to inch and itc for.. obvious. ytm for yards to meter, and mty exists. UTE converts USD to EUR, ETU reverse of that, UTB (usd to gbp) and BTU. ')
+    if operatorC == "CMD":
+        print(
+            "MI gives memory info, ME1 gives memory edit to slot 1 ME2 to slot 2 and so on until slot 4. C for conversions "
+        )
+        continue
+    if operatorC == "ME1":
+        str(memory)
+        memory = float(
+            input(
+                "What do you want to set memory slot 1 to? It is currently "
+                + memory
+                + " "
+                + ". "
+            )
+        )
+        continue
+    if operatorC == "ME2":
+        str(memory2)
+        memory2 = float(
+            input(
+                "What do you want to set memory slot 2 to? It is currently "
+                + memory2
+                + " "
+                + ". "
+            )
+        )
+        continue
+    if operatorC == "ME3":
+        memory3 = float(
+            input(
+                "What do you want to set memory slot 3 to? It is currently "
+                + memory3
+                + " "
+                + ". "
+            )
+        )
+        continue
+    if operatorC == "ME4":
+        memory4 = float(
+            input(
+                "What do you want to set memory slot 4 to? It is currently "
+                + memory4
+                + " "
+                + ". "
+            )
+        )
+        continue
+    if operatorC == "MRA":
+        memory = "empty!"
+        memory2 = "empty!"
+        memory3 = "empty!"
+        memory4 = "empty!"
+        print("Wiped all memory slots!")
+        continue
+    if operatorC == "MR1":
+        memory = "empty!"
+    if operatorC == "MR2":
+        memory2 = "empty!"
+    if operatorC == "MR3":
+        memory3 = "empty!"
+    if operatorC == "MR4":
+        memory4 = "empty!"
+    if operatorC == "C":
+        converter = input(
+            "Type ktm for km to miles, and mtk for reverse. cti for cm to inch and itc for.. obvious. ytm for yards to meter, and mty exists. UTE converts USD to EUR, ETU reverse of that, UTB (usd to gbp) and BTU. "
+        )
         converterC = converter.upper()
-        if converterC == 'KTM':
-            number1 = float(input('How many kilometers? '))
-            print('Your answer is:', (number1 * 0.621371))
-        if converterC == 'MTK':
-            number1 = float(input('How many miles? '))
-            print('Your answer is:', (number1 * 1.60934))
-        if converterC == 'CTI':
-            number1 = float(input('How many centimeters? '))
-            print('Your answer is:', (number1 * 0.393701))
-        if converterC == 'ITC':
-            number1 = float(input('How many inches? '))
-            print('Your answer is:', (number1 * 2.54))
-        if converterC == 'YTM':
-            number1 = float(input('How many yards? '))
-            print('Your answer is:', number1 * 0.9144)
-        if converterC == 'MTY':
-            number1 = float(input('How many meters? '))
-            print('Your answer is:', number1 * 1.09361)
-        if converterC == 'UTE':
-            number1 = float(input('How many dollars? '))
-            print('Your USD in EUR is:', number1 * 0.96)
-        if converterC == 'ETU':
-            number1 = float(input('How many euros? '))
-            print('Your EUR in USD is:', number1 * 1.04)
-        if converterC == 'UTB':
-            number1 = float(input('How many dollars? '))
-            print('Your USD in GBP is:', number1 * 0.8)
-        if converterC == 'BTU':
-            number1 = float(input('How many pounds? '))
-            print('Your GBP in USD is:', number1 * 1.25)
-        else:
-            print('Error: Trying to convert error to error? 500000 years in math jail ')
-     if operatorC == 'A':
-         memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-         memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory + number2)
-         if memorydeciderC == 'M2':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory2 + number2)
-         if memorydeciderC == 'M3':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory3 + number2)
-         if memorydeciderC == 'M4':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory4 + number2)
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What starting number? '))
-             number2 = float(input('Number to add? '))
-             print('Your answer is:', number1 + number2)
-     elif operatorC == 'S':
-         memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-         memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory - number2)
-         if memorydeciderC == 'M2':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory2 - number2)
-         if memorydeciderC == 'M3':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory3 - number2)
-         if memorydeciderC == 'M4':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory4 - number2)
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What starting number? '))
-             number2 = float(input('What subtractor? '))
-             print('Your answer is:', number1 - number2)
-     elif operatorC == 'M':
-         memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-         memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             print('Your answer is:', memory * number2)
-         if memorydeciderC == 'M2':
-             print('Your answer is:', memory2 * number2)
-         if memorydeciderC == 'M3':
-             print('Your answer is:', memory3 * number2)
-         if memorydeciderC == 'M4':
-             print('Your answer is:', memory4 * number2)
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('Number to be multiplied? '))
-             number2 = float(input('Multiplier? '))
-             print('Your answer is:', math.sin(number1))
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-     elif operatorC == 'D':
-         if number2 == 0:
-             print('Error: Dividing by 0 is illegal and can face you 60 years in school')
-         else:
-             memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-             memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory / number2)
-         if memorydeciderC == 'M2':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory2 / number2)
-         if memorydeciderC == 'M3':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory3 / number2)
-         if memorydeciderC == 'M4':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory4 / number2)
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('Number you wanna divide? '))
-             number2 = float(input('Divisor? '))
-             print('Your answer is:', math.sin(number1))
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-     elif operatorC == 'E':
-         if number1 == 0 and number2 == 0:
-             print('Error: 0^0 may land you 90 years in Math Jail')
-         else:
-             memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-             memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory ** number2)
-         if memorydeciderC == 'M2':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory2 ** number2)
-         if memorydeciderC == 'M3':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory3 ** number2)
-         if memorydeciderC == 'M4':
-             number2 = float(input('Second Number? '))
-             print('Your answer is:', memory4 ** number2)
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             number2 = float(input('What exponent? '))
-             print('Your answer is:', number1 ** number2)
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-     elif operatorC == 'R':
-         if number2 < 2:
-             print('Error: Rooting in such a way can get 8 generations of your family in Math Jail')
-         elif number1 < 0:
-             print('Error: Such roots cannot exist and you might get 500 families in Math Jail')
-         else:
-             memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-             memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             number2 = input('Second Number? ')
-             print('Your answer is:', memory ** (1/number2))
-         if memorydeciderC == 'M2':
-             number2 = input('Second Number? ')
-             print('Your answer is:', memory2 ** (1/number2))
-         if memorydeciderC == 'M3':
-             number2 = input('Second Number? ')
-             print('Your answer is:', memory3 ** (1/memory3))
-         if memorydeciderC == 'M4':
-             number2 = input('Second Number?')
-             print('Your answer is:', memory4 ** (1/memory4))
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             number2 = float(input('What level of rooting? (2 for squaring, 3 for cubing etc...)'))
-             print('Your answer is:', number1 ** (1/number2))
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-     elif operatorC == 'F':
-         print("Your answer is", math.factorial(number1))
-     elif operatorC == 'MOD':
-         if number2 == 0:
-             print('Error: Divided by 0, United by Math Jail')
-         else:
-             number3 = number1 % number2
-         print('Your answer is', number3)
-     elif operatorC == 'SIN':
-         memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-         memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             print('Your answer is:', math.sin(memory))
-         if memorydeciderC == 'M2':
-             print('Your answer is:', math.sin(memory2))
-         if memorydeciderC == 'M3':
-             print('Your answer is:', math.sin(memory3))
-         if memorydeciderC == 'M4':
-             print('Your answer is:', math.sin(memory4))
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             print('Your answer is:', math.sin(number1))
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-         number3 = math.sin(number1)
-         print('Your answer is', number3)
-     elif operatorC == 'COS':
-         memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-         memorydeciderC = memorydecider.upper()
-         if memorydeciderC == 'M1':
-             print('Your answer is:', math.cos(memory))
-         if memorydeciderC == 'M2':
-             print('Your answer is:', math.cos(memory2))
-         if memorydeciderC == 'M3':
-             print('Your answer is:', math.cos(memory3))
-         if memorydeciderC == 'M4':
-             print('Your answer is:', math.cos(memory4))
-         if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             print('Your answer is:', math.cos(number1))
-         if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too low)')
-     elif operatorC == 'TAN':
-        memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-        memorydeciderC = memorydecider.upper()
-        if memorydeciderC == 'M1':
-             print('Your answer is:', math.tan(memory))
-        if memorydeciderC == 'M2':
-             print('Your answer is:', math.tan(memory2))
-        if memorydeciderC == 'M3':
-             print('Your answer is:', math.tan(memory3))
-        if memorydeciderC == 'M4':
-             print('Your answer is:', math.tan(memory4))
-        if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             print('Your answer is:', math.tan(number1))
-        if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too low)')
-     elif operatorC == 'LOG':
-        memorydecider = input('Choose from M1, M2, M3, and M4. Choose S to skip this step ')
-        memorydeciderC = memorydecider.upper()
-        if memorydeciderC == 'M1':
-             print('Your answer is:', math.log(memory))
-        if memorydeciderC == 'M2':
-             print('Your answer is:', math.log(memory2))
-        if memorydeciderC == 'M3':
-             print('Your answer is:', math.log(memory3))
-        if memorydeciderC == 'M4':
-             print('Your answer is:', math.log(memory4))
-        if memorydeciderC == 'S' or memorydeciderC == 's':
-             number1 = float(input('What number? '))
-             print('Your answer is:', math.log(number1))
-        if memorydeciderC not in ['M1, M2, M3, M4, S']:
-             print('Invalid Memory Slot = Invalid IQ Number (number too bad)')
-     else:
-        if operatorC not in ['MI', 'ME1', 'ME2, ME3, ME4', 'CMD', 'C', 'CTI', 'MTK', 'KTM', 'A, S, M, D, F, E, R, SIN, COS, TAN, LOG']:
-            print('Invalid Operation')
-        else:
+        if converterC == "KTM":
+            number1 = float(input("How many kilometers? "))
+            print("Your answer is:", (number1 * 0.621371))
             continue
+        if converterC == "MTK":
+            number1 = float(input("How many miles? "))
+            print("Your answer is:", (number1 * 1.60934))
+            continue
+        if converterC == "CTI":
+            number1 = float(input("How many centimeters? "))
+            print("Your answer is:", (number1 * 0.393701))
+            continue
+        if converterC == "ITC":
+            number1 = float(input("How many inches? "))
+            print("Your answer is:", (number1 * 2.54))
+            continue
+        if converterC == "YTM":
+            number1 = float(input("How many yards? "))
+            print("Your answer is:", number1 * 0.9144)
+            continue
+        if converterC == "MTY":
+            number1 = float(input("How many meters? "))
+            print("Your answer is:", number1 * 1.09361)
+            continue
+        if converterC == "UTE":
+            number1 = float(input("How many dollars? "))
+            print("Your USD in EUR is:", number1 * 0.96)
+            continue
+        if converterC == "ETU":
+            number1 = float(input("How many euros? "))
+            print("Your EUR in USD is:", number1 * 1.04)
+            continue
+        if converterC == "UTB":
+            number1 = float(input("How many dollars? "))
+            print("Your USD in GBP is:", number1 * 0.8)
+            continue
+        if converterC == "BTU":
+            number1 = float(input("How many pounds? "))
+            print("Your GBP in USD is:", number1 * 1.25)
+            continue
+        else:
+            print("Error: Trying to convert error to error? 500000 years in math jail ")
+    if operatorC == "A":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory + number2)
+            continue
+        if memorydeciderC == "M2":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory2 + number2)
+            continue
+        if memorydeciderC == "M3":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory3 + number2)
+            continue
+        if memorydeciderC == "M4":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory4 + number2)
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What starting number? "))
+            number2 = float(input("Number to add? "))
+            print("Your answer is:", number1 + number2)
+            continue
+    elif operatorC == "S":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory - number2)
+            continue
+        if memorydeciderC == "M2":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory2 - number2)
+            continue
+        if memorydeciderC == "M3":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory3 - number2)
+            continue
+        if memorydeciderC == "M4":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory4 - number2)
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What starting number? "))
+            number2 = float(input("What subtractor? "))
+            print("Your answer is:", number1 - number2)
+            continue
+    elif operatorC == "M":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            print("Your answer is:", memory * number2)
+            continue
+        if memorydeciderC == "M2":
+            print("Your answer is:", memory2 * number2)
+            continue
+        if memorydeciderC == "M3":
+            print("Your answer is:", memory3 * number2)
+            continue
+        if memorydeciderC == "M4":
+            print("Your answer is:", memory4 * number2)
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("Number to be multiplied? "))
+            number2 = float(input("Multiplier? "))
+            print("Your answer is:", math.sin(number1))
+            continue
+    elif operatorC == "D":
+        if number2 == 0:
+            print("Error: Dividing by 0 is illegal and can face you 60 years in school")
+        else:
+            memorydecider = input(
+                "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+            )
+            memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory / number2)
+            continue
+        if memorydeciderC == "M2":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory2 / number2)
+            continue
+        if memorydeciderC == "M3":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory3 / number2)
+            continue
+        if memorydeciderC == "M4":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory4 / number2)
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("Number you wanna divide? "))
+            number2 = float(input("Divisor? "))
+            print("Your answer is:", math.sin(number1))
+            continue
+    elif operatorC == "E":
+        if number1 == 0 and number2 == 0:
+            print("Error: 0^0 may land you 90 years in Math Jail")
+        else:
+            memorydecider = input(
+                "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+            )
+            memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory**number2)
+            continue
+        if memorydeciderC == "M2":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory2**number2)
+            continue
+        if memorydeciderC == "M3":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory3**number2)
+            continue
+        if memorydeciderC == "M4":
+            number2 = float(input("Second Number? "))
+            print("Your answer is:", memory4**number2)
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            number2 = float(input("What exponent? "))
+            print("Your answer is:", number1**number2)
+            continue
+    elif operatorC == "R":
+        if number2 < 2:
+            print(
+                "Error: Rooting in such a way can get 8 generations of your family in Math Jail"
+            )
+        elif number1 < 0:
+            print(
+                "Error: Such roots cannot exist and you might get 500 families in Math Jail"
+            )
+        else:
+            memorydecider = input(
+                "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+            )
+            memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = input("Second Number? ")
+            print("Your answer is:", memory ** (1 / number2))
+            continue
+        if memorydeciderC == "M2":
+            number2 = input("Second Number? ")
+            print("Your answer is:", memory2 ** (1 / number2))
+            continue
+        if memorydeciderC == "M3":
+            number2 = input("Second Number? ")
+            print("Your answer is:", memory3 ** (1 / memory3))
+            continue
+        if memorydeciderC == "M4":
+            number2 = input("Second Number?")
+            print("Your answer is:", memory4 ** (1 / memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            number2 = float(
+                input("What level of rooting? (2 for squaring, 3 for cubing etc...)")
+            )
+            print("Your answer is:", number1 ** (1 / number2))
+            continue
+    elif operatorC == "F":
+        memorydecider = input(
+                "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+            )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            number2 = input("Second Number? ")
+            print("Your answer is:", math.factorial(memory))
+            continue
+        if memorydeciderC == "M2":
+            number2 = input("Second Number? ")
+            print("Your answer is:", memory2 ** (1 / number2))
+            continue
+        if memorydeciderC == "M3":
+            number2 = input("Second Number? ")
+            print("Your answer is:", memory3 ** (1 / memory3))
+            continue
+        if memorydeciderC == "M4":
+            number2 = input("Second Number?")
+            print("Your answer is:", memory4 ** (1 / memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            number2 = float(
+                input("What level of rooting? (2 for squaring, 3 for cubing etc...)")
+            )
+            print("Your answer is:", number1 ** (1 / number2))
+            continue
+    elif operatorC == "MOD":
+        if number2 == 0:
+            print("Error: Divided by 0, United by Math Jail")
+        else:
+            number3 = number1 % number2
+        print("Your answer is", number3)
+    elif operatorC == "SIN":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            print("Your answer is:", math.sin(memory))
+            continue
+        if memorydeciderC == "M2":
+            print("Your answer is:", math.sin(memory2))
+            continue
+        if memorydeciderC == "M3":
+            print("Your answer is:", math.sin(memory3))
+            continue
+        if memorydeciderC == "M4":
+            print("Your answer is:", math.sin(memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            print("Your answer is:", math.sin(number1))
+            continue
+        else:
+            print("Invalid Choice = Invalid Brain")
+
+    elif operatorC == "COS":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            print("Your answer is:", math.cos(memory))
+            continue
+        if memorydeciderC == "M2":
+            print("Your answer is:", math.cos(memory2))
+            continue
+        if memorydeciderC == "M3":
+            print("Your answer is:", math.cos(memory3))
+            continue
+        if memorydeciderC == "M4":
+            print("Your answer is:", math.cos(memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            print("Your answer is:", math.cos(number1))
+            continue
+        else:
+            print("Invalid Choice = Invalid Brain")
+    elif operatorC == "TAN":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            print("Your answer is:", math.tan(memory))
+            continue
+        if memorydeciderC == "M2":
+            print("Your answer is:", math.tan(memory2))
+            continue
+        if memorydeciderC == "M3":
+            print("Your answer is:", math.tan(memory3))
+            continue
+        if memorydeciderC == "M4":
+            print("Your answer is:", math.tan(memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            print("Your answer is:", math.tan(number1))
+            continue
+        else:
+            print("Invalid choice = Invalid Brain")
+    elif operatorC == "LOG":
+        memorydecider = input(
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
+        memorydeciderC = memorydecider.upper()
+        if memorydeciderC == "M1":
+            print("Your answer is:", math.log(memory))
+            continue
+        if memorydeciderC == "M2":
+            print("Your answer is:", math.log(memory2))
+            continue
+        if memorydeciderC == "M3":
+            print("Your answer is:", math.log(memory3))
+            continue
+        if memorydeciderC == "M4":
+            print("Your answer is:", math.log(memory4))
+            continue
+        if memorydeciderC == "S" or memorydeciderC == "s":
+            number1 = float(input("What number? "))
+            print("Your answer is:", math.log(number1))
+            continue
+        else:
+            print("Inavlid Choice = Invalid Brain")
+    else:
+        print("Invalid Operation")
