@@ -77,12 +77,20 @@ while True:
         continue
     if operatorC == "MR1":
         memory = "empty!"
+        print("Wiped M1! ")
+        continue
     if operatorC == "MR2":
         memory2 = "empty!"
+        print("Wiped M2! ")
+        continue
     if operatorC == "MR3":
         memory3 = "empty!"
+        print("Wiped M3! ")
+        continue
     if operatorC == "MR4":
         memory4 = "empty!"
+        print("Wiped M4! ")
+        continue
     if operatorC == "C":
         converter = input(
             "Type ktm for km to miles, and mtk for reverse. cti for cm to inch and itc for.. obvious. ytm for yards to meter, and mty exists. UTE converts USD to EUR, ETU reverse of that, UTB (usd to gbp) and BTU. "
