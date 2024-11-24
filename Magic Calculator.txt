@@ -202,7 +202,7 @@ while True:
         if memorydeciderC == "S" or memorydeciderC == "s":
             number1 = float(input("Number to be multiplied? "))
             number2 = float(input("Multiplier? "))
-            print("Your answer is:", math.sin(number1))
+            print("Your answer is:", number1 * number2)
             continue
     elif operatorC == "D":
         if number2 == 0:
@@ -231,7 +231,7 @@ while True:
         if memorydeciderC == "S" or memorydeciderC == "s":
             number1 = float(input("Number you wanna divide? "))
             number2 = float(input("Divisor? "))
-            print("Your answer is:", math.sin(number1))
+            print("Your answer is:", number1 / number2)
             continue
     elif operatorC == "E":
         if number1 == 0 and number2 == 0:
@@ -286,11 +286,11 @@ while True:
             continue
         if memorydeciderC == "M3":
             number2 = input("Second Number? ")
-            print("Your answer is:", memory3 ** (1 / memory3))
+            print("Your answer is:", memory3 ** (1 / number2))
             continue
         if memorydeciderC == "M4":
             number2 = input("Second Number?")
-            print("Your answer is:", memory4 ** (1 / memory4))
+            print("Your answer is:", memory4 ** (1 / number2))
             continue
         if memorydeciderC == "S" or memorydeciderC == "s":
             number1 = float(input("What number? "))
@@ -301,8 +301,8 @@ while True:
             continue
     elif operatorC == "F":
         memorydecider = input(
-                "Choose from M1, M2, M3, and M4. Choose S to skip this step "
-            )
+            "Choose from M1, M2, M3, and M4. Choose S to skip this step "
+        )
         memorydeciderC = memorydecider.upper()
         if memorydeciderC == "M1":
             number2 = input("Second Number? ")
@@ -310,22 +310,19 @@ while True:
             continue
         if memorydeciderC == "M2":
             number2 = input("Second Number? ")
-            print("Your answer is:", memory2 ** (1 / number2))
+            print("Your answer is:", math.factorial(memory2))
             continue
         if memorydeciderC == "M3":
             number2 = input("Second Number? ")
-            print("Your answer is:", memory3 ** (1 / memory3))
+            print("Your answer is:", math.factorial(memory3))
             continue
         if memorydeciderC == "M4":
             number2 = input("Second Number?")
-            print("Your answer is:", memory4 ** (1 / memory4))
+            print("Your answer is:", math.factorial(memory4))
             continue
         if memorydeciderC == "S" or memorydeciderC == "s":
             number1 = float(input("What number? "))
-            number2 = float(
-                input("What level of rooting? (2 for squaring, 3 for cubing etc...)")
-            )
-            print("Your answer is:", number1 ** (1 / number2))
+            print("Your answer is:", math.factorial(number1))
             continue
     elif operatorC == "MOD":
         if number2 == 0:
