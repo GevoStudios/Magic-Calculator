@@ -3,6 +3,8 @@ import os
 import hashlib
 import sqlite3
 import random
+import datetime
+import cmath
 
 memory = "empty!"
 memory2 = "empty!"
@@ -11,13 +13,50 @@ memory4 = "empty!"
 number1 = 0
 number2 = 0
 
-savecycle1 = "empty!"
-savecycle2 = "empty!"
-savecycle3 = "empty!"
+savecycle = []
 
-equationcycle1 = "empty!"
-equationcycle2 = "empty!"
-equationcycle3 = "empty!"
+equationcycle = []
+
+settings_path = "C:/Users/Public/settings.txt"
+
+if not os.path.exists(settings_path):
+    with open(settings_path, "w") as f:
+        f.write("histLength=3\n")
+        f.write("angleUnit=NOD\n")
+
+
+def setLoad():
+    historylimit = 3
+    angleUnit = "NOD"
+    path = "C:/Users/Public/settings.txt"
+
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            for line in f:
+                if line.startswith("histLength="):
+                    try:
+                        val = int(line.strip().split("=")[1])
+                        historylimit = max(3, min(100, val))
+                    except:
+                        historylimit = 3
+                elif line.startswith("angleUnit="):
+                    val = line.strip().split("=")[1].upper()
+                    if val in ["DEG", "RAD", "NOD"]:
+                        angleUnit = val
+                    else:
+                        angleUnit = "NOD"
+    return historylimit, angleUnit
+
+
+def setSave(historylimit, angleUnit):
+    with open(settings_path, "w") as f:
+        f.write(f"histLength={historylimit}\n")
+        f.write(f"angleUnit={angleUnit}\n")
+
+
+def degs(x):
+    return x * (cmath.pi / 180)
+
 
 loggedin = False
 accountin = None
@@ -76,9 +115,11 @@ if texter == 4:
 print("Welcome to Magic Calculator v4.0! The Online Update!")
 print(splash)
 while True:
+    historylimit, angleUnit = setLoad()
+
     try:
         operator = input(
-            "What operation do you want? (type ACC for account) Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents, R for Roots, F for factorials, Mod for Modular stuff, Log for Log, Sin/Cos/tan do what you expect them to do. Press Q to quit and CMD for more commands. "
+            "What operation do you want? [CMD FOR MORE COMMANDS, CMD1 FOR EVEN MORE COMMANDS, SET FOR SETTINGS] (type ACC for account) Type A for addition, S for Subtraction, M for multiplication, and D for division. Type E for exponents, R for Roots, F for factorials, Mod for Modular stuff, Log for Log, Sin/Cos/tan do what you expect them to do. Press Q to quit. "
         )
         operatorC = operator.upper()
         if operatorC == "Q":
@@ -86,16 +127,67 @@ while True:
                 print("DEBUG: operatorC = Q")
                 print("DEBUG: Action = break")
             break
+        if operatorC == "SET":
+            settingsdecider = input("Edit historylimit or angle unit? (H/A) ")
+            settingsdeciderC = settingsdecider.upper()
+            if settingsdeciderC == "H":
+                historylimit = int(
+                    input(
+                        f"What do you want the history limit to be? (3-100) (default is 3, currently {historylimit}) "
+                    )
+                )
+                if historylimit < 3 or historylimit > 100:
+                    print("(Error Code 17) GO OVER LIMIT = NEGATIVE BRAIN IQ")
+                    historylimit = 3
+                    continue
+                setSave(historylimit)
+                continue
+            elif settingsdeciderC == "A":
+                unitInput = (
+                    input(
+                        f"Set angle unit to DEG, RAD, or NOD? (currently {angleUnit}) "
+                    )
+                    .strip()
+                    .upper()
+                )
+
+                if unitInput not in ["DEG", "RAD", "NOD"]:
+                    print("(Error Code 18) GET IN-SET!  ")
+                    continue
+
+                angleUnit = unitInput
+                setSave(historylimit, angleUnit)
+                continue
         if operatorC == "MI":
             if debugC == "Y":
                 print("DEBUG: operatorC = MI")
                 print("DEBUG: Action = print()")
+            memory = str(memory).replace("j", "i")
+            if "+0i" in memory or "-0i" in memory or "0i" in memory:
+                memory = memory.replace("+0i", "")
+                memory = memory.replace("-0i", "")
+                memory = memory.replace("0i", "")
+            memory2 = str(memory2).replace("j", "i")
+            if "+0i" in memory2 or "-0i" in memory2 or "0i" in memory2:
+                memory2 = memory2.replace("+0i", "")
+                memory2 = memory2.replace("-0i", "")
+                memory2 = memory2.replace("0i", "")
+            memory3 = str(memory3).replace("j", "i")
+            if "+0i" in memory3 or "-0i" in memory3 or "0i" in memory3:
+                memory3 = memory3.replace("+0i", "")
+                memory3 = memory3.replace("-0i", "")
+                memory3 = memory3.replace("0i", "")
+            memory4 = str(memory4).replace("j", "i")
+            if "+0i" in memory4 or "-0i" in memory4 or "0i" in memory4:
+                memory4 = memory4.replace("+0i", "")
+                memory4 = memory4.replace("-0i", "")
+                memory4 = memory4.replace("0i", "")
             print(
                 "Memory:",
-                str(memory).replace("j", "i"),
-                str(memory2).replace("j", "i"),
-                str(memory3).replace("j", "i"),
-                str(memory4).replace("j", "i"),
+                memory,
+                memory2,
+                memory3,
+                memory4,
                 ". To add memory, type ME. To use memory in calculations, for me1 its M1, and so on. To reset memory, type MRA to reset all and MR(memory slot) to erase any memory slot, like MR1. ",
             )
             continue
@@ -106,6 +198,10 @@ while True:
             print(
                 "MI gives memory info, ME1 gives memory edit to slot 1 ME2 to slot 2 and so on until slot 4. C for conversions, Arcsin for arcsin, Sinh for hyperbolic sine, Arcsinh for Hyperbolic Arcsin. These go on because Arccos exists and Arccosh and Cosh too. Alg for Algebra (in the format ax ± b = c). QALG for Quadratic Algebra (in the format ax^2 ± b ± c = 0). "
             )
+        if operatorC == "CMD1":
+            print(
+                "HIST is history, RAND is random number, EXP is Export, CLEAR to clear history"
+            )
             continue
         if operatorC == "ME1":
             if debugC == "Y":
@@ -114,6 +210,11 @@ while True:
             memorySTR = str(memory)
             print(f"M1 is currently {memory}")
             memory = input("What do you want to set memory slot 1 to? ")
+            memory = str(memory).replace("j", "i")
+            if "+0i" in memory or "-0i" in memory or "0i" in memory:
+                memory = memory.replace("+0i", "")
+                memory = memory.replace("-0i", "")
+                memory = memory.replace("0i", "")
             memory = memory.replace("i", "j")
             memory = complex(memory)
             if debugC == "Y":
@@ -125,8 +226,13 @@ while True:
                 print("DEBUG: operatorC = ME2")
                 print("DEBUG: Action = var = str()")
             memory2STR = str(memory2)
-            memory2 = input("What do you want to set memory slot 2 to? ")
             print(f"M2 is currently {memory2}")
+            memory2 = input("What do you want to set memory slot 2 to? ")
+            memory2 = str(memory2).replace("j", "i")
+            if "+0i" in memory2 or "-0i" in memory2 or "0i" in memory2:
+                memory2 = memory2.replace("+0i", "")
+                memory2 = memory2.replace("-0i", "")
+                memory2 = memory2.replace("0i", "")
             memory2 = memory2.replace("i", "j")
             memory2 = complex(memory2)
             if debugC == "Y":
@@ -138,8 +244,13 @@ while True:
                 print("DEBUG: operatorC = ME3")
                 print("DEBUG: Action = var = str()")
             memory3STR = str(memory3)
-            memory3 = input("What do you want to set memory slot 3 to? ")
             print(f"M3 is currently {memory3}")
+            memory3 = input("What do you want to set memory slot 3 to? ")
+            memory3 = str(memory3).replace("j", "i")
+            if "+0i" in memory3 or "-0i" in memory3 or "0i" in memory3:
+                memory3 = memory3.replace("+0i", "")
+                memory3 = memory3.replace("-0i", "")
+                memory3 = memory3.replace("0i", "")
             memory3 = memory3.replace("i", "j")
             memory3 = complex(memory3)
             if debugC == "Y":
@@ -150,8 +261,13 @@ while True:
             if debugC == "Y":
                 print("DEBUG: operatorC = ME4")
                 print("DEBUG: Action = var = str()")
-            memory4 = input("What do you want to set memory slot 4 to? ")
             print(f"M4 is currently {memory4}")
+            memory4 = input("What do you want to set memory slot 4 to? ")
+            memory4 = str(memory4).replace("j", "i")
+            if "+0i" in memory4 or "-0i" in memory4 or "0i" in memory4:
+                memory4 = memory4.replace("+0i", "")
+                memory4 = memory4.replace("-0i", "")
+                memory4 = memory4.replace("0i", "")
             memory4 = memory4.replace("i", "j")
             memory4 = complex(memory4)
             if debugC == "Y":
@@ -192,7 +308,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} kilometers to miles."
                 print("Your answer is:", (number1 * 0.621371))
             if converterC == "MTK":
@@ -201,7 +317,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} miles to kilometers."
                 print("Your answer is:", (number1 * 1.6093))
             if converterC == "CTI":
@@ -210,7 +326,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} centimeters to inches."
                 print("Your answer is:", (number1 * 0.393701))
                 continue
@@ -220,7 +336,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} inches to centimeters."
                 print("Your answer is:", (number1 * 2.54))
                 continue
@@ -230,7 +346,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} yards to meters."
                 print("Your answer is:", number1 * 0.9144)
                 continue
@@ -240,7 +356,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} meters to yards."
                 print("Your answer is:", number1 * 1.09361)
                 continue
@@ -250,7 +366,7 @@ while True:
                 savecycle2 = savecycle1
                 savecycle1 = number1
                 equationcycle3 = equationcycle2
-                equationcycle2 = equationcyce1
+                equationcycle2 = equationcycle1
                 equationcycle1 = f"Convert {number1} USD to EUR."
                 print("Your USD in EUR is:", number1 * 0.95)
                 continue
@@ -396,7 +512,18 @@ while True:
                     memoryANS = memoryANS.replace("-0i", "")
                     memoryANS = memoryANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
-                continue
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                equation = f"M1 + {number2}"
+                equationcycle.insert(0, equation)
+                savecycle.insert(0, memoryANS)
+                if len(savecycle) > historylimit:
+                    savecycle.pop()
+                    equationcycle.pop()
+                    continue
             if memorydeciderC == "M2":
                 number2 = input("Second Number? ")
                 number2 = str(number2).replace("i", "j")
@@ -407,6 +534,17 @@ while True:
                     memory2ANS = memory2ANS.replace("-0i", "")
                     memory2ANS = memory2ANS.replace("0i", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                equation = f"M2 + {number2}"
+                equationcycle.insert(0, equation)
+                savecycle.insert(0, memory2ANS)
+                if len(savecycle) > historylimit:
+                    savecycle.pop()
+                    equationcycle.pop()
                 continue
             if memorydeciderC == "M3":
                 number2 = input("Second Number? ")
@@ -418,6 +556,17 @@ while True:
                     memory3ANS = memory3ANS.replace("-0i", "")
                     memory3ANS = memory3ANS.replace("0i", "")
                 print("Your answer is:", memory3ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                equation = f"M3 + {number2}"
+                equationcycle.insert(0, equation)
+                savecycle.insert(0, memory3ANS)
+                if len(savecycle) > historylimit:
+                    savecycle.pop()
+                    equationcycle.pop()
                 continue
             if memorydeciderC == "M4":
                 number2 = input("Second Number? ")
@@ -429,6 +578,17 @@ while True:
                     memory4ANS = memory4ANS.replace("-0i", "")
                     memory4ANS = memory4ANS.replace("0i", "")
                 print("Your answer is:", memory4ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                equation = f"M4 + {number2}"
+                equationcycle.insert(0, equation)
+                savecycle.insert(0, memory4ANS)
+                if len(savecycle) > historylimit:
+                    savecycle.pop()
+                    equationcycle.pop()
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = input("Starting Number? ")
@@ -443,6 +603,22 @@ while True:
                     numberANS = numberANS.replace("-0i", "")
                     numberANS = numberANS.replace("0i", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                equation = f"{number1} + {number2}"
+                equationcycle.insert(0, equation)
+                savecycle.insert(0, numberANS)
+                if len(savecycle) > historylimit:
+                    savecycle.pop()
+                    equationcycle.pop()
                 continue
         elif operatorC == "S":
             memorydecider = input(
@@ -459,6 +635,17 @@ while True:
                     memoryANS = memoryANS.replace("-0i", "")
                     memoryANS = memoryANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memoryANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M1 - {number2}"
                 continue
             if memorydeciderC == "M2":
                 number2 = input("Second Number? ")
@@ -470,6 +657,17 @@ while True:
                     memory2ANS = memory2ANS.replace("-0i", "")
                     memory2ANS = memory2ANS.replace("0i", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory2ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M2 - {number2}"
                 continue
             if memorydeciderC == "M3":
                 number2 = input("Second Number? ")
@@ -481,6 +679,17 @@ while True:
                     memory3ANS = memory3ANS.replace("-0i", "")
                     memory3ANS = memory3ANS.replace("0i", "")
                 print("Your answer is:", memory3ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory3ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M3 - {number2}"
                 continue
             if memorydeciderC == "M4":
                 number2 = input("Second Number? ")
@@ -492,6 +701,17 @@ while True:
                     memory4ANS = memory4ANS.replace("-0i", "")
                     memory4ANS = memory4ANS.replace("0i", "")
                 print("Your answer is:", memory4ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory4ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M4 - {number2}"
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = input("Starting Number? ")
@@ -506,6 +726,22 @@ while True:
                     numberANS = numberANS.replace("-0i", "")
                     numberANS = numberANS.replace("0i", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = numberANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"{number1} - {number2}"
                 continue
         elif operatorC == "M":
             memorydecider = input(
@@ -522,6 +758,17 @@ while True:
                     memoryANS = memoryANS.replace("-0i", "")
                     memoryANS = memoryANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memoryANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M1 * {number2}"
                 continue
             if memorydeciderC == "M2":
                 number2 = input("Second Number? ")
@@ -533,6 +780,17 @@ while True:
                     memory2ANS = memory2ANS.replace("-0i", "")
                     memory2ANS = memory2ANS.replace("0i", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory2ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M2 * {number2}"
                 continue
             if memorydeciderC == "M3":
                 number2 = input("Second Number? ")
@@ -544,6 +802,17 @@ while True:
                     memory3ANS = memory3ANS.replace("-0i", "")
                     memory3ANS = memory3ANS.replace("0i", "")
                 print("Your answer is:", memory3ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory3ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M3 * {number2}"
                 continue
             if memorydeciderC == "M4":
                 number2 = input("Second Number? ")
@@ -555,6 +824,17 @@ while True:
                     memory4ANS = memory4ANS.replace("-0i", "")
                     memory4ANS = memory4ANS.replace("0i", "")
                 print("Your answer is:", memory4ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory4ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M4 * {number2}"
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = input("Number to be multiplied? ")
@@ -569,6 +849,22 @@ while True:
                     numberANS = numberANS.replace("-0i", "")
                     numberANS = numberANS.replace("0i", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = numberANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"{number1} * {number2}"
                 continue
         elif operatorC == "D":
             memorydecider = input(
@@ -590,6 +886,17 @@ while True:
                     memoryANS = memoryANS.replace("-0i", "")
                     memoryANS = memoryANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memoryANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M1 / {number2}"
                 continue
             if memorydeciderC == "M2":
                 number2 = input("Divisor? ")
@@ -606,6 +913,17 @@ while True:
                     memory2ANS = memory2ANS.replace("-0i", "")
                     memory2ANS = memory2ANS.replace("0i", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory2ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M2 / {number2}"
                 continue
             if memorydeciderC == "M3":
                 number2 = input("Divisor? ")
@@ -622,6 +940,17 @@ while True:
                     memory3ANS = memory3ANS.replace("-0i", "")
                     memory3ANS = memory3ANS.replace("0i", "")
                 print("Your answer is:", memory3ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory3ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M3 / {number2}"
                 continue
             if memorydeciderC == "M4":
                 number2 = input("Divisor? ")
@@ -638,6 +967,17 @@ while True:
                     memory4ANS = memory4ANS.replace("-0i", "")
                     memory4ANS = memory4ANS.replace("0i", "")
                 print("Your answer is:", memory4ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory4ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M4 / {number2}"
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = input("Number to be divided? ")
@@ -655,6 +995,22 @@ while True:
                     numberANS = numberANS.replace("-0i", "")
                     numberANS = numberANS.replace("0i", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = numberANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"{number1} / {number2}"
                 continue
         elif operatorC == "E":
             memorydecider = input(
@@ -671,6 +1027,17 @@ while True:
                     memoryANS = memoryANS.replace("-0i", "")
                     memoryANS = memoryANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memoryANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M1 ^ {number2}"
                 continue
             if memorydeciderC == "M2":
                 number2 = input("Second Number? ")
@@ -682,6 +1049,17 @@ while True:
                     memory2ANS = memory2ANS.replace("-0i", "")
                     memory2ANS = memory2ANS.replace("0i", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory2ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M2 ^ {number2}"
                 continue
             if memorydeciderC == "M3":
                 number2 = input("Second Number? ")
@@ -693,6 +1071,17 @@ while True:
                     memory3ANS = memory3ANS.replace("-0i", "")
                     memory3ANS = memory3ANS.replace("0i", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory3ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M3 ^ {number2}"
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = input("What number? ")
@@ -707,6 +1096,22 @@ while True:
                     numberANS = numberANS.replace("-0i", "")
                     numberANS = numberANS.replace("0i", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = numberANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"{number1} ^ {number2}"
                 continue
             if number1 == 0 and number2 == 0:
                 print("Error: 0^0 may land you 90 years in Math Jail")
@@ -721,6 +1126,17 @@ while True:
                 memoryANS = str(memoryANS)
                 memoryANS = memoryANS.replace("0j", "")
                 print("Your answer is:", memoryANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memoryANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M1 ^ (1/{number2})"
                 continue
             if memorydeciderC == "M2":
                 number2 = float(input("Second Number? "))
@@ -728,6 +1144,17 @@ while True:
                 memory2ANS = str(memory2ANS)
                 memory2ANS = memory2ANS.replace("0j", "")
                 print("Your answer is:", memory2ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory2ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M2 ^ (1/{number2})"
                 continue
             if memorydeciderC == "M3":
                 number2 = float(input("Second Number? "))
@@ -735,6 +1162,17 @@ while True:
                 memory3ANS = str(memory3ANS)
                 memory3ANS = memory3ANS.replace("0j", "")
                 print("Your answer is:", memory3ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory3ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M3 ^ (1/{number2})"
                 continue
             if memorydeciderC == "M4":
                 number2 = float(input("Second Number? "))
@@ -742,18 +1180,45 @@ while True:
                 memory4ANS = str(memory4ANS)
                 memory4ANS = memory4ANS.replace("0j", "")
                 print("Your answer is:", memory4ANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = memory4ANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"M4 ^ (1/{number2})"
                 continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = float(input("What number? "))
                 number2 = float(
                     input(
-                        "What level of rooting? (2 for squaring, 3 for cubing etc...)"
+                        "What level of rooting? (2 for squaring, 3 for cubing etc... )"
                     )
                 )
                 numberANS = (number1 + 0j) ** (1 / number2)
                 numberANS = str(numberANS)
                 numberANS = numberANS.replace("0j", "")
                 print("Your answer is:", numberANS)
+                number2 = str(number2).replace("j", "i")
+                if "+ 0i" in number2 or "- 0i" in number2 or "0i" in number2:
+                    number2 = number2.replace("+0i", "")
+                    number2 = number2.replace("-0i", "")
+                    number2 = number2.replace("0i", "")
+                number1 = str(number1).replace("j", "i")
+                if "+ 0i" in number1 or "- 0i" in number1 or "0i" in number1:
+                    number1 = number1.replace("+0i", "")
+                    number1 = number1.replace("-0i", "")
+                    number1 = number1.replace("0i", "")
+                savecycle3 = savecycle2
+                savecycle2 = savecycle1
+                savecycle1 = numberANS
+                equationcycle3 = equationcycle2
+                equationcycle2 = equationcycle1
+                equationcycle1 = f"{number1} ^ (1/{number2})"
                 continue
             if number2 < 2:
                 print(
@@ -798,56 +1263,386 @@ while True:
             )
             memorydeciderC = memorydecider.upper()
             if memorydeciderC == "M1":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.sin(math.radians(memory))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.sin(degs(memory))
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
                     print("Your answer is:", memoryDEG)
+                    equation = f"sin(M1) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.sin(memory))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.sin(memory)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M1) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.sin(degs(memory))
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                            print("Your answer is:", memoryDEG)
+                            memoryDEG = cmath.sin(degs(memory))
+                            memoryDEG = str(memoryDEG).replace("j", "i")
+                            equation = f"sin(M1) (Degrees)"
+                            equationcycle.insert(0, equation)
+                            savecycle.insert(0, memoryDEG)
+                            if len(savecycle) > historylimit:
+                                savecycle.pop()
+                                equationcycle.pop()
+                                continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.sin(memory))
+                        memoryDEG = cmath.sin(memory)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M1) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M2":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.sin(math.radians(memory2))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.sin(math.radians(memory2))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M2) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.sin(memory2))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.sin(memory2)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M2) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.sin(math.radians(memory2))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.sin(math.radians(memory2))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M2) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.sin(memory2))
+                        memoryDEG = cmath.sin(memory2)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M2) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M3":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.sin(math.radians(memory3))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.sin(math.radians(memory3))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M3) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.sin(memory3))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.sin(memory3)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M3) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.sin(math.radians(memory3))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.sin(math.radians(memory3))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M3) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.sin(memory3))
+                        memoryDEG = cmath.sin(memory3)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M3) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M4":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.sin(math.radians(memory4))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.sin(math.radians(memory4))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M4) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.sin(memory4))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.sin(memory4)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin(M4) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.sin(math.radians(memory4))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.sin(math.radians(memory4))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M4) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.sin(memory4))
+                        memoryDEG = cmath.sin(memory4)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin(M4) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = float(input("What number? "))
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.sin(math.radians(number1))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.sin(math.radians(number1))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin({number1}) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.sin(number1))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.sin(number1)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"sin({number1}) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.sin(math.radians(number1))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.sin(math.radians(number1))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin({number1}) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.sin(number1))
+                        memoryDEG = cmath.sin(number1)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"sin({number1}) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC not in [
                 "M1",
                 "M2",
@@ -866,56 +1661,386 @@ while True:
             )
             memorydeciderC = memorydecider.upper()
             if memorydeciderC == "M1":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.cos(math.radians(memory))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.cos(math.radians(memory))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M1) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.cos(memory))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.cos(memory)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M1) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.cos(math.radians(memory))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.cos(math.radians(memory))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M1) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.cos(memory))
+                        memoryDEG = cmath.cos(memory)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M1) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M2":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.cos(math.radians(memory2))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.cos(math.radians(memory2))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M2) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.cos(memory2))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.cos(memory2)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M2) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.cos(math.radians(memory2))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.cos(math.radians(memory2))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M2) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.cos(memory2))
+                        memoryDEG = cmath.cos(memory2)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M2) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M3":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.cos(math.radians(memory3))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.cos(math.radians(memory3))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M3) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.cos(memory3))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.cos(memory3)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M3) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.cos(math.radians(memory3))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.cos(math.radians(memory3))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M3) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.cos(memory3))
+                        memoryDEG = cmath.cos(memory3)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M3) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M4":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.cos(math.radians(memory4))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.cos(math.radians(memory4))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M4) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.cos(memory4))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.cos(memory4)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos(M4) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.cos(math.radians(memory4))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.cos(math.radians(memory4))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M4) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.cos(memory4))
+                        memoryDEG = cmath.cos(memory4)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos(M4) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = float(input("What number? "))
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.cos(math.radians(number1))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.cos(math.radians(number1))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos({number1}) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.cos(number1))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.cos(number1)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"cos({number1}) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.cos(math.radians(number1))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.cos(math.radians(number1))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos({number1}) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.cos(number1))
+                        memoryDEG = cmath.cos(number1)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"cos({number1}) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC not in [
                 "M1",
                 "M2",
@@ -927,63 +2052,392 @@ while True:
                 "RAD",
             ]:
                 print("Invalid Choice = Invalid Brain")
-
         elif operatorC == "TAN":
             memorydecider = input(
                 "Choose from M1, M2, M3, and M4. Choose S to skip this step "
             )
             memorydeciderC = memorydecider.upper()
             if memorydeciderC == "M1":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.tan(math.radians(memory))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.tan(math.radians(memory))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M1) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.tan(memory))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.tan(memory)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M1) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.tan(math.radians(memory))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.tan(math.radians(memory))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M1) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.tan(memory))
+                        memoryDEG = cmath.tan(memory)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M1) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M2":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.tan(math.radians(memory2))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.tan(math.radians(memory2))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M2) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.tan(memory2))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.tan(memory2)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M2) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.tan(math.radians(memory2))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.tan(math.radians(memory2))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M2) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.tan(memory2))
+                        memoryDEG = cmath.tan(memory2)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M2) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M3":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.tan(math.radians(memory3))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.tan(math.radians(memory3))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M3) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.tan(memory3))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.tan(memory3)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M3) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.tan(math.radians(memory3))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.tan(math.radians(memory3))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M3) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.tan(memory3))
+                        memoryDEG = cmath.tan(memory3)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M3) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "M4":
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.tan(math.radians(memory4))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.tan(math.radians(memory4))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M4) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.tan(memory4))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.tan(memory4)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan(M4) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.tan(math.radians(memory4))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.tan(math.radians(memory4))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M4) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.tan(memory4))
+                        memoryDEG = cmath.tan(memory4)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan(M4) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC == "S" or memorydeciderC == "s":
                 number1 = float(input("What number? "))
-                decidertrig = input("(Deg)rees or (Rad)ians? ")
-                decidertrigC = decidertrig.upper()
-                if decidertrigC == "DEG":
-                    memoryDEG = math.tan(math.radians(number1))
+                if angleUnit == "DEG":
+                    memoryDEG = cmath.tan(math.radians(number1))
                     print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan({number1}) (Degrees)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
-                elif decidertrigC == "RAD":
-                    print("Your answer is:", math.tan(number1))
+                elif angleUnit == "RAD":
+                    memoryDEG = cmath.tan(number1)
+                    print("Your answer is:", memoryDEG)
+                    memoryDEG = str(memoryDEG).replace("j", "i")
+                    if "+ 0i" in memoryDEG or "- 0i" in memoryDEG or "0i" in memoryDEG:
+                        memoryDEG = memoryDEG.replace("+0i", "")
+                        memoryDEG = memoryDEG.replace("-0i", "")
+                        memoryDEG = memoryDEG.replace("0i", "")
+                    equation = f"tan({number1}) (Radians)"
+                    equationcycle.insert(0, equation)
+                    savecycle.insert(0, memoryDEG)
+                    if len(savecycle) > historylimit:
+                        savecycle.pop()
+                        equationcycle.pop()
                     continue
+                elif angleUnit == "NOD":
+                    decidertrig = input("(Deg)rees or (Rad)ians? ")
+                    decidertrigC = decidertrig.upper()
+                    if decidertrigC == "DEG":
+                        memoryDEG = cmath.tan(math.radians(number1))
+                        print("Your answer is:", memoryDEG)
+                        memoryDEG = cmath.tan(math.radians(number1))
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan({number1}) (Degrees)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    elif decidertrigC == "RAD":
+                        print("Your answer is:", cmath.tan(number1))
+                        memoryDEG = cmath.tan(number1)
+                        memoryDEG = str(memoryDEG).replace("j", "i")
+                        if (
+                            "+ 0i" in memoryDEG
+                            or "- 0i" in memoryDEG
+                            or "0i" in memoryDEG
+                        ):
+                            memoryDEG = memoryDEG.replace("+0i", "")
+                            memoryDEG = memoryDEG.replace("-0i", "")
+                            memoryDEG = memoryDEG.replace("0i", "")
+                        equation = f"tan({number1}) (Radians)"
+                        equationcycle.insert(0, equation)
+                        savecycle.insert(0, memoryDEG)
+                        if len(savecycle) > historylimit:
+                            savecycle.pop()
+                            equationcycle.pop()
+                            continue
+                    else:
+                        print("Invalid Choice = Invalid Brain")
+                        continue
             if memorydeciderC not in [
                 "M1",
                 "M2",
@@ -995,7 +2449,6 @@ while True:
                 "RAD",
             ]:
                 print("Invalid Choice = Invalid Brain")
-
         elif operatorC == "LOG":
             memorydecider = input(
                 "Choose from M1, M2, M3, and M4. Choose S to skip this step "
@@ -1578,7 +3031,7 @@ while True:
                     print("Your answer is:", memoryDEG)
                     continue
                 elif decidertrigC == "RAD":
-                    print("Your answer is:", mathatanh(memory))
+                    print("Your answer is:", math.atanh(memory))
                     continue
             if memorydeciderC == "M2":
                 decidertrig = input("(Deg)rees or (Rad)ians? ")
@@ -1620,6 +3073,117 @@ while True:
                     continue
                 elif decidertrigC == "RAD":
                     print("Your answer is:", math.atanh(number1))
+                    continue
+        elif operatorC == "HIST":
+            print("=== History ===")
+            for i in range(len(savecycle)):
+                print(f"{i+1}) {equationcycle[i]} = {savecycle[i]}")
+            continue
+        elif operatorC == "CLEAR":
+            savecycle.clear()
+            equationcycle.clear()
+            print("bye bye history (never coming back)")
+            continue
+        elif operatorC == "RAND":
+            number1 = int(input("Lower Bound? "))
+            number2 = int(input("Upper Bound? "))
+            randomnum = random.randint(number1, number2)
+            print(randomnum)
+            savecycle3 = savecycle2
+            savecycle2 = savecycle1
+            savecycle1 = randomnum
+            equationcycle3 = equationcycle2
+            equationcycle2 = equationcycle1
+            equationcycle1 = f"Random: {number1} to {number2} "
+            continue
+        elif operatorC == "EXP":
+            historydecider = input("Export History, Memory, or both? (H/M/B) ")
+            historydeciderC = historydecider.upper()
+            if historydeciderC == "H":
+                filename = input(
+                    "What directory? (please end with .txt and start from C:/) "
+                )
+                try:
+                    with open(filename, "w") as file:
+                        file.write("Magic Calculator History Export\n")
+                        file.write("===============================\n")
+                        file.write(
+                            f"Exported at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                        )
+                        file.write("===============================\n")
+                        for i in range(len(savecycle)):
+                            file.write(f"{i+1}) {equationcycle[i]} = {savecycle[i]}\n")
+                    print("Success!")
+                    continue
+                except Exception:
+                    print(
+                        "(Error Code 16) either you forgot to put .txt (80 years in math jail) or something went horribly wrong"
+                    )
+            elif historydeciderC == "M":
+                filename = input(
+                    "What directory? (please end with .txt and start from C:/) "
+                )
+                try:
+                    with open(filename, "w") as file:
+                        file.write("Magic Calculator Memory Export\n")
+                        file.write("===============================\n")
+                        file.write(
+                            f"Exported at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                        )
+                        file.write("===============================\n")
+                        file.write(
+                            f"Memory 1: {str(memory).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 2: {str(memory2).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 3: {str(memory3).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 4: {str(memory4).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                    print("Success!")
+                    continue
+                except Exception:
+                    print(
+                        "(Error Code 16) either you forgot to put .txt (80 years in math jail) or something went horribly wrong"
+                    )
+            elif historydeciderC == "B":
+                filename = input(
+                    "What directory? (please end with .txt and start from C:/) "
+                )
+                try:
+                    with open(filename, "w") as file:
+                        file.write("Magic Calculator Export\n")
+                        file.write("===============================\n")
+                        file.write(
+                            f"Exported at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                        )
+                        file.write("===============================\n")
+                        file.write(
+                            f"Memory 1: {str(memory).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 2: {str(memory2).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 3: {str(memory3).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        file.write(
+                            f"Memory 4: {str(memory4).replace('j', 'i').replace('+0i','').replace('-0i','').replace('0i','')}\n"
+                        )
+                        for i in range(len(savecycle)):
+                            file.write(f"{i+1}) {equationcycle[i]} = {savecycle[i]}\n")
+                    print("Success!")
+                    continue
+                except Exception:
+                    print(
+                        "(Error Code 16) either you forgot to put .txt (80 years in math jail) or something went horribly wrong"
+                    )
+                    continue
+                else:
+                    print("Invalid Choice = Invalid Brain")
                     continue
         elif operatorC == "ACC":
             decideracc = input(
@@ -1925,6 +3489,10 @@ while True:
                 "MR2",
                 "MR3",
                 "MR4",
+                "HIS",
+                "RAND",
+                "CMD",
+                "CMD1",
             ]
         ):
             continue
@@ -1945,6 +3513,8 @@ while True:
             "(Error Code 14) NONEXISTENT FILE: YOUR NEXT 6 DESCENDANTS COME TO MATH JAIL"
         )
         continue
-    except Exception:
-        print("(Error Code 15) Something went horribly wrong")
+    except Exception as e:
+        print(
+            f"(Error Code 15) Something went horribly wrong. Please report the bug as {e}. If needed, launch in debug mode."
+        )
         continue
