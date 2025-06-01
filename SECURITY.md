@@ -12,5 +12,6 @@ currently being supported with security updates.
 | -----------| ------------------ |
 | 0.x        | :x:                |
 | 2.0x & 2.1x| :x:                |
-| 2.2 to 3.0 | :white_check_mark: |
-| >3.0       | :white_check_mark: |
+| 2.2 to 3.0 | :x:                |
+| 3.x        | :white_check_mark: |
+| 4.x        | :white_check_mark: |
