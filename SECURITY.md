@@ -12,5 +12,6 @@ These are versions currently with official support. 4.0 and above get security u
 | 0.x        | :x:                | :x:                       |
 | 2.0x & 2.1x| :x:                | :x:                       |
 | 2.2 to 3.0 | :x:                | :x:                       |
-| 3.x        | :white_check_mark: | :x:                       |
-| 4.x        | :white_check_mark: | :white_check_mark:        |
+| 3.x        | :x:                | :x:                       |               
+| 4.0 to 4.2 | :white_check_mark: | :x:                       |
+| 4.3+       | :white_check_mark: | :white_check_mark:        |
